@@ -15,6 +15,8 @@ class GameState(): #finished moves, pins, checks, double checks today
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
+        self.checkMate = False
+        self.staleMate = False
         self.inCheck = False
         self.pins = []
         self.checks = []
@@ -31,7 +33,7 @@ class GameState(): #finished moves, pins, checks, double checks today
             'K' : self.getKingMoves
             }
 
-    def makeMove(self,move):
+    def makeMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move)
@@ -139,7 +141,7 @@ class GameState(): #finished moves, pins, checks, double checks today
                     validSquares = [(checkRow, checkCol)] #the only place a piece can move to is the knight
                 else: #any other piece but a knight
                     for i in range(1, 8):
-                        validSquare = (kingRow +check[2] * i, kingCol + check[3] * i) #you can continue moving closer and closer to the attacking piece
+                        validSquare = (kingRow + check[2] * i, kingCol + check[3] * i) #you can continue moving closer and closer to the attacking piece
                         validSquares.append(validSquare)
                         if validSquare[0] == checkRow and validSquare[1] == checkCol: #once you arrive at the attacking piece you can take and break the loop
                             break 
@@ -151,15 +153,6 @@ class GameState(): #finished moves, pins, checks, double checks today
                 self.getKingMoves(kingRow, kingCol, moves)
         else: #no checks, all moves are fine
             moves = self.getAllPossibleMoves()
-        
-        if len(moves) == 0:
-            if self.inCheck:
-                self.checkMate = True
-            else:
-                self.staleMate = True
-        else:
-            self.checkMate = False
-            self.staleMate = False
 
         if self.whiteToMove:
             self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
@@ -168,20 +161,20 @@ class GameState(): #finished moves, pins, checks, double checks today
         self.currentCasltingRight = tempCastleRights
         return moves
     
-#    def checkingChecks(self):
-#        if self.whiteToMove:
-#            return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
-#        else:
-#            return self.squareUnderAttack(self.blackKingLocation[0], self.blackKingLocation[1])
-#
-#    def squareUnderAttack(self, r, c):
-#        self.whiteToMove = not self.whiteToMove
-#        oppMoves = self.getAllPossibleMoves()
-#        self.whiteToMove = not self.whiteToMove
-#        for move in oppMoves:
-#            if move.endRow == r and move.endCol == c:
-#                return True
-#        return False
+    #def inCheck(self):
+     #   if self.whiteToMove:
+      #      return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
+       # else:
+        #    return self.squareUnderAttack(self.blackKingLocation[0], self.blackKingLocation[1])
+
+    #def squareUnderAttack(self, r, c):
+     #   self.whiteToMove = not self.whiteToMove
+      #  oppMoves = self.getAllPossibleMoves()
+       # self.whiteToMove = not self.whiteToMove
+        #for move in oppMoves:
+         #   if move.endRow == r and move.endCol == c:
+          #      return True
+        #return False
 
     def getAllPossibleMoves(self):
         moves = []
@@ -219,7 +212,7 @@ class GameState(): #finished moves, pins, checks, double checks today
 
         if self.board[r+moveAmount][c] == "--":
             if not piecePinned or pinDirection == (moveAmount, 0):
-                if r+moveAmount == backRow:
+                if r + moveAmount == backRow:
                     pawnPromotion = True
                 moves.append(Move((r, c), (r+moveAmount, c), self.board, pawnPromotion=pawnPromotion))
                 if r == startRow and self.board[r+2*moveAmount][c] == "--":
@@ -289,11 +282,12 @@ class GameState(): #finished moves, pins, checks, double checks today
         piecePinned = False
         pinDirection = ()
         for i in range(len(self.pins)-1, -1, -1):
-            piecePinned = True
-            pinDirection = (self.pins[i][2], self.pins[i][3])
-            if self.board[r][c][1] != "Q": #because our queen moves are generated based on rook moves
-                self.pins.remove(self.pins[i])
-            break
+            if self.pins[i][0] == r and self.pins[i][1] == c:
+                piecePinned = True
+                pinDirection = (self.pins[i][2], self.pins[i][3])
+                if self.board[r][c][1] != "Q": #because our queen moves are generated based on rook moves
+                    self.pins.remove(self.pins[i])
+                break
 
         directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
         enemyColor = "b" if self.whiteToMove else "w"
@@ -312,13 +306,9 @@ class GameState(): #finished moves, pins, checks, double checks today
 
                         elif endPiece[0] == enemyColor:
                             moves.append(Move((r, c), (endRow, endCol), self.board))
-
+                            break
                         else:
                             break
-
-                    else: 
-                        break
-
                 else:
                     break
 
@@ -330,7 +320,7 @@ class GameState(): #finished moves, pins, checks, double checks today
                 self.pins.remove(self.pins[i])
                 break
 
-        knightMoves = ((-2, 1), (-2, -1), (-1, 2), (1, 2), (-1, -2), (1, -2), (-2, 1), (-2, -1))
+        knightMoves = ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1))
         allyColor = "w" if self.whiteToMove else "b"
         for m in knightMoves:
             endRow = r + m[0]
