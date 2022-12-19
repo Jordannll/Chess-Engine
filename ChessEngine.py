@@ -44,7 +44,7 @@ class GameState(): #finished moves, pins, checks, double checks today
         if move.isPawnPromotion:
             self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
 
-        if move.IsEnpassantMove:
+        if move.isEnpassantMove:
             self.board[move.startRow][move.endCol] = '--'
 
         if move.pieceMoved[1] == 'p' and abs(move.startRow - move.endRow) == 2:
@@ -135,7 +135,7 @@ class GameState(): #finished moves, pins, checks, double checks today
                 self.stalemate = True
         
         if self.whiteToMove:
-            self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1]. moves)
+            self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
         else:
             self.getCastleMoves(self.blackKingLocation[0], self.blackKingLocation[1], moves)
         self.enpassantPossible = tempEnpassantPossible
@@ -317,7 +317,7 @@ class Move():
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
         #pawn promotion
-        self.pawnPromotion = (self.pieceMoved == 'wp' and self.endRow == 0) or (self.pieceMoved == 'bp' and self.endRow == 7)
+        self.isPawnPromotion = (self.pieceMoved == 'wp' and self.endRow == 0) or (self.pieceMoved == 'bp' and self.endRow == 7)
         #pawn en passant
         self.isEnpassantMove = isEnpassantMove
         if self.isEnpassantMove:
