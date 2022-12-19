@@ -17,9 +17,6 @@ class GameState(): #finished moves, pins, checks, double checks today
         self.blackKingLocation = (0, 4)
         self.checkMate = False
         self.staleMate = False
-        self.inCheck = False
-        self.pins = []
-        self.checks = []
         self.enpassantPossible = () #will be the coordiantes where an en passent capture is possible
         self.currentCasltingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs)]
@@ -44,17 +41,16 @@ class GameState(): #finished moves, pins, checks, double checks today
         elif move.pieceMoved == "bK":
             self.blackKingLocation = (move.endRow, move.endCol)
 
+        if move.isPawnPromotion:
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
+
+        if move.IsEnpassantMove:
+            self.board[move.startRow][move.endCol] = '--'
+
         if move.pieceMoved[1] == 'p' and abs(move.startRow - move.endRow) == 2:
             self.enpassantPossible = ((move.endRow + move.startRow)//2, move.endCol)
         else:
             self.enpassantPossible = ()
-        #if en passant move, must update the board to capture the pawn
-        if move.isEnpassantMove:
-            self.board[move.startRow][move.endCol] = "--"
-        #if pawn promotion change piece
-        if move.pawnPromotion:
-            promotedPiece = input("Promote to Q, R, B, or N:") #we can make this part of the ui later
-            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece
 
         if move.isCastleMove:
             if move.endCol - move.startCol == 2:
