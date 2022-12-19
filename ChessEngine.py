@@ -107,7 +107,7 @@ class GameState(): #finished moves, pins, checks, double checks today
                 if move.startCol == 0:
                     self.currentCastlingRight.wqs = False
                 elif move.startCol == 7:
-                    self.currentCastlingRights.wks = False
+                    self.currentCastlingRight.wks = False
         elif move.pieceMoved == 'bR':
             if move.startRow == 0:
                 if move.startCol == 0:
@@ -116,61 +116,46 @@ class GameState(): #finished moves, pins, checks, double checks today
                     self.currentCastlingRight.bks = False
 
     def getAllValidMoves(self):
-        moves = []
+        tempEnpassantPossible = self.enpassantPossible
         tempCastleRights = CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs)
-        self.inCheck, self.pins, self.checks = self.checkForPinsAndChecks()
-        if self.whiteToMove:
-            kingRow = self.whiteKingLocation[0]
-            kingCol = self.whiteKingLocation[1]
-        else:
-            kingRow = self.blackKingLocation[0]
-            kingCol = self.blackKingLocation[1]
-        if self.inCheck:
-            if len(self.checks) == 1: #single check, can be blocked or piece taken
-                moves = self.getAllPossibleMoves()
-                check = self.checks[0] #check information from checkForPinsAndChecks function later on
-                checkRow = check[0]
-                checkCol = check[1]
-                pieceChecking = self.board[checkRow][checkCol] #which enemy piece is causing the check
-                validSquares = [] #creating a list where pieces can move to
-                if pieceChecking[1] == "N": #Because if the piece checking is a knight you must either take it or move king
-                    validSquares = [(checkRow, checkCol)] #the only place a piece can move to is the knight
-                else: #any other piece but a knight
-                    for i in range(1, 8):
-                        validSquare = (kingRow + check[2] * i, kingCol + check[3] * i) #you can continue moving closer and closer to the attacking piece
-                        validSquares.append(validSquare)
-                        if validSquare[0] == checkRow and validSquare[1] == checkCol: #once you arrive at the attacking piece you can take and break the loop
-                            break 
-                for i in range(len(moves) - 1, -1, -1): #go through the list backwards
-                    if moves[i].pieceMoved[1] != "K": #check if it isn't the king moving
-                        if not (moves[i].endRow, moves[i].endCol) in validSquares: #check if the move blocks or takes the check
-                            moves.remove(moves[i]) #if the king does not move and nothing else blocks or captures it is removed from the list
-            else: #double check, king has to move
-                self.getKingMoves(kingRow, kingCol, moves)
-        else: #no checks, all moves are fine
-            moves = self.getAllPossibleMoves()
+        
+        moves = self.getAllPossibleMoves()
 
+        for i in range(len(moves)-1, -1, -1):
+            self.makeMove(moves[i])
+            self.whiteToMove = not self.whiteToMove
+            if self.inCheck():
+                moves.remove(moves[i])
+            self.whiteToMove = not self.whiteToMove
+            self.undoMove()
+        if len(moves) == 0:
+            if self.inCheck():
+                self.checkmate = True
+            else:
+                self.stalemate = True
+        
         if self.whiteToMove:
-            self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
+            self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1]. moves)
         else:
             self.getCastleMoves(self.blackKingLocation[0], self.blackKingLocation[1], moves)
+        self.enpassantPossible = tempEnpassantPossible
         self.currentCasltingRight = tempCastleRights
         return moves
     
-    #def inCheck(self):
-     #   if self.whiteToMove:
-      #      return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
-       # else:
-        #    return self.squareUnderAttack(self.blackKingLocation[0], self.blackKingLocation[1])
+    def inCheck(self):
+        if self.whiteToMove:
+            return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
+        else:
+            return self.squareUnderAttack(self.blackKingLocation[0], self.blackKingLocation[1])
 
-    #def squareUnderAttack(self, r, c):
-     #   self.whiteToMove = not self.whiteToMove
-      #  oppMoves = self.getAllPossibleMoves()
-       # self.whiteToMove = not self.whiteToMove
-        #for move in oppMoves:
-         #   if move.endRow == r and move.endCol == c:
-          #      return True
-        #return False
+    def squareUnderAttack(self, r, c):
+        self.whiteToMove = not self.whiteToMove
+        oppMoves = self.getAllPossibleMoves()
+        self.whiteToMove = not self.whiteToMove
+        for move in oppMoves:
+            if move.endRow == r and move.endCol == c:
+                return True
+        return False
 
     def getAllPossibleMoves(self):
         moves = []
