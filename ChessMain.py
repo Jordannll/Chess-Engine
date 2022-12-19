@@ -22,6 +22,7 @@ def main():
 
     validMoves = gs.getAllValidMoves()
     moveMade = False
+    animate = False #flag variablefor when we shoudl animate a move
 
     sqSelected = ()
     playerClicks = []
@@ -52,6 +53,7 @@ def main():
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])
                                 moveMade = True
+                                animate = True
                                 sqSelected = ()
                                 playerClicks = []
                     if not moveMade:
@@ -61,11 +63,14 @@ def main():
                 if e.key == p.K_z:
                     gs.undoMove()
                     moveMade = True
+                    animate = False
 
         if moveMade:
-            animateMove(gs.moveLog[-1], screen, gs.board, clock)
+            if animate:
+                animateMove(gs.moveLog[-1], screen, gs.board, clock)
             validMoves = gs.getAllValidMoves()
             moveMade = False
+            animate = False
 
         drawGameState(screen, gs, validMoves, sqSelected)
         clock.tick(MAX_FPS)
