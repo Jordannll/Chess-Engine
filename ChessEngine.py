@@ -15,8 +15,8 @@ class GameState(): #finished moves, pins, checks, double checks today
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
-        self.checkMate = False
-        self.staleMate = False
+        self.checkmate = False
+        self.stalemate = False
         self.enpassantPossible = () #will be the coordiantes where an en passent capture is possible
         self.currentCasltingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs)]
@@ -115,7 +115,7 @@ class GameState(): #finished moves, pins, checks, double checks today
                 elif move.startCol == 7:
                     self.currentCastlingRight.bks = False
 
-    def getAllValidMoves(self):
+    def getValidMoves(self):
         tempEnpassantPossible = self.enpassantPossible
         tempCastleRights = CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs)
         
