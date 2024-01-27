@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-class GameState(): #finished moves, pins, checks, double checks today
-=======
 class GameState: #finished moves, pins, checks, double checks today
->>>>>>> d243198 (Castling Bug Fixed)
     def __init__(self):
         self.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -23,13 +19,9 @@ class GameState: #finished moves, pins, checks, double checks today
         self.stalemate = False
         self.enpassantPossible = () #will be the coordiantes where an en passent capture is possible
         self.enpassantPossibleLog = [self.enpassantPossible]
-<<<<<<< HEAD
-        self.currentCasltingRight = CastleRights(True, True, True, True)
-        self.castleRightsLog = [CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs)]
-=======
+
         self.currentCastlingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)]
->>>>>>> d243198 (Castling Bug Fixed)
 
         self.moveFunctions = {
             'p' : self.getPawnMoves,
@@ -73,11 +65,8 @@ class GameState: #finished moves, pins, checks, double checks today
         self.enpassantPossibleLog.append(self.enpassantPossible)
 
         self.updateCastleRights(move)
-<<<<<<< HEAD
-        self.castleRightsLog.append(CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs))
-=======
+
         self.castleRightsLog.append(CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs))
->>>>>>> d243198 (Castling Bug Fixed)
 
     def undoMove(self):
         if len(self.moveLog) != 0:
@@ -136,7 +125,6 @@ class GameState: #finished moves, pins, checks, double checks today
         if move.pieceCaptured == 'wR':
             if move.endRow == 7:
                 if move.endCol == 0:
-<<<<<<< HEAD
                     self.currentCasltingRight.wqs = False
                 elif move.endCol == 7:
                     self.currentCasltingRight.wks = False
@@ -149,23 +137,8 @@ class GameState: #finished moves, pins, checks, double checks today
 
     def getValidMoves(self):
         tempEnpassantPossible = self.enpassantPossible
-        tempCastleRights = CastleRights(self.currentCasltingRight.wks, self.currentCasltingRight.bks, self.currentCasltingRight.wqs, self.currentCasltingRight.bqs)
-=======
-                    self.currentCastlingRight.wqs = False
-                elif move.endCol == 7:
-                    self.currentCastlingRight.wks = False
-        elif move.pieceCaptured == 'bR':
-            if move.endRow == 0:
-                if move.endCol == 0:
-                    self.currentCastlingRight.bqs = False
-                elif move.endCol == 7:
-                    self.currentCastlingRight.bks  = False
-
-    def getValidMoves(self):
-        tempEnpassantPossible = self.enpassantPossible
         tempCastleRights = CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)
->>>>>>> d243198 (Castling Bug Fixed)
-        
+
         moves = self.getAllPossibleMoves()
 
         for i in range(len(moves)-1, -1, -1):
@@ -180,19 +153,16 @@ class GameState: #finished moves, pins, checks, double checks today
                 self.checkmate = True
             else:
                 self.stalemate = True
-        
+
         if self.whiteToMove:
             self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
         else:
             self.getCastleMoves(self.blackKingLocation[0], self.blackKingLocation[1], moves)
         self.enpassantPossible = tempEnpassantPossible
-<<<<<<< HEAD
-        self.currentCasltingRight = tempCastleRights
-=======
+
         self.currentCastlingRight = tempCastleRights
->>>>>>> d243198 (Castling Bug Fixed)
         return moves
-    
+
     def inCheck(self):
         if self.whiteToMove:
             return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
@@ -256,7 +226,7 @@ class GameState: #finished moves, pins, checks, double checks today
                     elif (r+1, c+1) == self.enpassantPossible:
                         moves.append(Move((r,c), (r+1, c+1), self.board, isEnpassantMove = True))
 
-    
+
     def getRookMoves(self, r, c, moves):
         directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
         enemyColor = "b" if self.whiteToMove else "w"
@@ -265,7 +235,7 @@ class GameState: #finished moves, pins, checks, double checks today
             for i in range(1, 8):
                 endRow = r + d[0] * i
                 endCol = c + d[1] * i
-                
+
                 if 0 <= endRow < 8 and 0 <= endCol < 8:
                         endPiece = self.board[endRow][endCol]
 
@@ -309,7 +279,7 @@ class GameState: #finished moves, pins, checks, double checks today
                         break
                 else:
                     break
-        
+
     def getQueenMoves(self, r, c, moves):
         self.getRookMoves(r, c, moves)
         self.getBishopMoves(r, c, moves)
@@ -328,15 +298,9 @@ class GameState: #finished moves, pins, checks, double checks today
     def getCastleMoves(self, r, c, moves):
         if self.squareUnderAttack(r, c): #no castle when in check
             return
-<<<<<<< HEAD
-        if (self.whiteToMove and self.currentCasltingRight.wks) or (not self.whiteToMove and self.currentCasltingRight.bks):
-            self.getKingsideCastleMoves(r, c, moves)
-        if (self.whiteToMove and self.currentCasltingRight.wqs) or (not self.whiteToMove and self.currentCasltingRight.bqs):
-=======
         if (self.whiteToMove and self.currentCastlingRight.wks) or (not self.whiteToMove and self.currentCastlingRight.bks):
             self.getKingsideCastleMoves(r, c, moves)
         if (self.whiteToMove and self.currentCastlingRight.wqs) or (not self.whiteToMove and self.currentCastlingRight.bqs):
->>>>>>> d243198 (Castling Bug Fixed)
             self.getQueensideCastleMoves(r, c, moves)
 
     def getKingsideCastleMoves(self, r, c, moves):
@@ -409,7 +373,7 @@ class Move():
                 return self.colsToFiles[self.startCol] + "x" + endSquare
             else:
                 return endSquare
-        
+
         moveString = self.pieceMoved[1]
         if self.isCapture:
             moveString += 'x'

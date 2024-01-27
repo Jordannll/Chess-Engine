@@ -33,8 +33,8 @@ def main():
     gameOver = False
     running = True
 
-    playerOne = False #if a human is playing white then this will be true, if an AI is playing then false
-    playerTwo = False #same as above but for black
+    playerOne = True #if a human is playing white then this will be true, if an AI is playing then false
+    playerTwo = True #same as above but for black
 
     AIThinking = False
     moveFinderProcess = None
