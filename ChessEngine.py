@@ -1,4 +1,4 @@
-class GameState: #finished moves, pins, checks, double checks today
+class GameState(): #still need to change the board, add the piece image, add the move function in self.moveFunctions
     def __init__(self):
         self.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -15,12 +15,12 @@ class GameState: #finished moves, pins, checks, double checks today
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
+        self.whiteHandLocation = (7, 5)
+        self.blackHandLocation = (0, 5)
         self.checkmate = False
         self.stalemate = False
         self.enpassantPossible = () #will be the coordiantes where an en passent capture is possible
         self.enpassantPossibleLog = [self.enpassantPossible]
-
-        self.currentCastlingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)]
 
         self.moveFunctions = {
@@ -29,7 +29,8 @@ class GameState: #finished moves, pins, checks, double checks today
             'N' : self.getKnightMoves,
             'B' : self.getBishopMoves,
             'Q' : self.getQueenMoves,
-            'K' : self.getKingMoves
+            'K' : self.getKingMoves #,
+            # 'H' : self.getHandMoves
             }
 
     def makeMove(self, move):
@@ -42,6 +43,12 @@ class GameState: #finished moves, pins, checks, double checks today
             self.whiteKingLocation = (move.endRow, move.endCol)
         elif move.pieceMoved == "bK":
             self.blackKingLocation = (move.endRow, move.endCol)
+
+        if move.pieceMoved == 'wH':
+            self.whiteHandLocation = (move.endRow, move.endCol)
+        elif move.pieceMoved == 'bH':
+            self.blackHandLocation = (move.endRow, move.endCol)
+
 
         if move.isPawnPromotion:
             self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
@@ -65,7 +72,6 @@ class GameState: #finished moves, pins, checks, double checks today
         self.enpassantPossibleLog.append(self.enpassantPossible)
 
         self.updateCastleRights(move)
-
         self.castleRightsLog.append(CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs))
 
     def undoMove(self):
@@ -125,20 +131,33 @@ class GameState: #finished moves, pins, checks, double checks today
         if move.pieceCaptured == 'wR':
             if move.endRow == 7:
                 if move.endCol == 0:
-                    self.currentCasltingRight.wqs = False
+                    self.currentCastlingRight.wqs = False
                 elif move.endCol == 7:
-                    self.currentCasltingRight.wks = False
+                    self.currentCastlingRight.wks = False
         elif move.pieceCaptured == 'bR':
             if move.endRow == 0:
                 if move.endCol == 0:
-                    self.currentCasltingRight.bqs = False
+                    self.currentCastlingRight.bqs = False
                 elif move.endCol == 7:
-                    self.currentCasltingRight.bks  = False
+                    self.currentCastlingRight.bks  = False
+        
+        wksHandpos = ((6, 4), (5, 4), (6, 5), (5, 5), (6, 6), (5, 6))
+        wqsHandpos = ((6, 4), (5, 4), (6, 3), (5, 3), (6, 2), (5, 2))
+        bksHandpos = ((1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6))
+        bqsHandpos = ((1, 4), (2, 4), (1, 3), (2, 3), (1, 2), (2, 2))
+        if self.whiteHandLocation not in wksHandpos:
+            self.currentCastlingRight.wks = False
+        if self.whiteHandLocation not in wqsHandpos:
+            self.currentCastlingRight.wqs = False
+        if self.blackHandLocation not in bksHandpos:
+            self.currentCastlingRight.bks = False
+        if self.blackHandLocation not in bqsHandpos:
+            self.currentCastlingRight.bqs = False
 
     def getValidMoves(self):
         tempEnpassantPossible = self.enpassantPossible
         tempCastleRights = CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)
-
+        
         moves = self.getAllPossibleMoves()
 
         for i in range(len(moves)-1, -1, -1):
@@ -153,16 +172,15 @@ class GameState: #finished moves, pins, checks, double checks today
                 self.checkmate = True
             else:
                 self.stalemate = True
-
+        
         if self.whiteToMove:
             self.getCastleMoves(self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
         else:
             self.getCastleMoves(self.blackKingLocation[0], self.blackKingLocation[1], moves)
         self.enpassantPossible = tempEnpassantPossible
-
         self.currentCastlingRight = tempCastleRights
         return moves
-
+    
     def inCheck(self):
         if self.whiteToMove:
             return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
@@ -226,7 +244,7 @@ class GameState: #finished moves, pins, checks, double checks today
                     elif (r+1, c+1) == self.enpassantPossible:
                         moves.append(Move((r,c), (r+1, c+1), self.board, isEnpassantMove = True))
 
-
+    
     def getRookMoves(self, r, c, moves):
         directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
         enemyColor = "b" if self.whiteToMove else "w"
@@ -235,7 +253,7 @@ class GameState: #finished moves, pins, checks, double checks today
             for i in range(1, 8):
                 endRow = r + d[0] * i
                 endCol = c + d[1] * i
-
+                
                 if 0 <= endRow < 8 and 0 <= endCol < 8:
                         endPiece = self.board[endRow][endCol]
 
@@ -280,6 +298,30 @@ class GameState: #finished moves, pins, checks, double checks today
                 else:
                     break
 
+    def getHandMoves(self, r, c, moves):
+        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1), (-1, 0), (0, -1), (1, 0), (0, 1))
+        if self.whiteToMove:
+            kingPos = self.whiteKingLocation
+        else:
+            kingPos = self.blackKingLocation
+        enemyColor = "b" if self.whiteToMove else "w"
+        for d in directions:
+            for i in range (1, 5):
+                endRow = r + d[0] * i
+                endCol = c + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
+                    if (kingPos[0] - 2) <= endRow <= (kingPos[0] + 2)and (kingPos[1] - 2) <= endCol <= (kingPos[1] + 2):
+                        endPiece = self.board[endRow][endCol]
+                        if endPiece == "--":
+                            moves.append(Move((r, c), (endRow, endCol), self.board))
+                        elif endPiece[0] == enemyColor:
+                            moves.append(Move((r, c), (endRow, endCol), self.board))
+                            break
+                        else:
+                            break
+                else:
+                    break
+        
     def getQueenMoves(self, r, c, moves):
         self.getRookMoves(r, c, moves)
         self.getBishopMoves(r, c, moves)
@@ -373,7 +415,7 @@ class Move():
                 return self.colsToFiles[self.startCol] + "x" + endSquare
             else:
                 return endSquare
-
+        
         moveString = self.pieceMoved[1]
         if self.isCapture:
             moveString += 'x'

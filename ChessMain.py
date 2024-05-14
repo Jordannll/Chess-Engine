@@ -34,7 +34,7 @@ def main():
     running = True
 
     playerOne = True #if a human is playing white then this will be true, if an AI is playing then false
-    playerTwo = True #same as above but for black
+    playerTwo = False #same as above but for black
 
     AIThinking = False
     moveFinderProcess = None
@@ -189,7 +189,7 @@ def drawMoveLog(screen, gs, font):
         if i+1 < len(moveLog):
             moveString += str(moveLog[i+1]) + "  "
         moveTexts.append(moveString)
-
+    
     movesPerRow = 3
     padding = 5
     lineSpacing = 0
