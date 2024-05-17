@@ -21,6 +21,7 @@ class GameState(): #still need to change the board, add the piece image, add the
         self.stalemate = False
         self.enpassantPossible = () #will be the coordiantes where an en passent capture is possible
         self.enpassantPossibleLog = [self.enpassantPossible]
+        self.currentCastlingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)]
 
         self.moveFunctions = {
