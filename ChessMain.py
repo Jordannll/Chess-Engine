@@ -11,7 +11,7 @@ MAX_FPS = 15
 IMAGES = {}
 
 def loadImages():
-    pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bN', 'bB', 'bK', 'bQ']
+    pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'wH', 'bp', 'bR', 'bN', 'bN', 'bB', 'bK', 'bQ', 'bH']
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load(f"C:/Users/jorda/OneDrive/Documents/Coding Files/Jordan EE/pieces/{piece}.png"), (SQ_SIZE, SQ_SIZE))
 

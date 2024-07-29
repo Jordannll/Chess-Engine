@@ -1,7 +1,7 @@
 #smart move finder
 import random
 
-pieceScore = {"K" : 0, "Q" : 9, "R" : 5, "B" : 3, "N" : 3 ,"p" : 1}
+pieceScore = {"K" : 0, "Q" : 9, "R" : 5, "H" : 4, "B" : 3, "N" : 3 ,"p" : 1}
 
 knightScores = [[1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 2, 2, 2, 2, 2, 2, 1],
@@ -56,7 +56,16 @@ blackPawnScores =  [[0, 0, 0, 0, 0, 0, 0, 0],
                     [5, 6, 6, 7, 7, 6, 6, 5],
                     [8, 8, 8, 8, 8, 8, 8, 8]]
 
-piecePositionScores = {"N" : knightScores, "B" : bishopScores, "Q" : queenScores, "R" : rookScores, "wp" : whitePawnScores, "bp" : blackPawnScores}
+handScores = [[1, 1, 1, 3, 1, 1, 1, 1],
+              [1, 2, 3, 3, 3, 1, 1, 1],
+              [1, 4, 3, 3, 3, 4, 2, 1],
+              [1, 2, 3, 3, 3, 2, 2, 1],
+              [1, 2, 3, 3, 3, 2, 2, 1],
+              [1, 4, 3, 3, 3, 4, 2, 1],
+              [1, 2, 3, 3, 3, 1, 1, 1],
+              [1, 1, 1, 3, 1, 1, 1, 1]]
+
+piecePositionScores = {"N" : knightScores, "B" : bishopScores, "Q" : queenScores, "R" : rookScores, "wp" : whitePawnScores, "bp" : blackPawnScores, "H" : handScores}
 
 CHECKMATE = 1000
 STALEMATE = 0

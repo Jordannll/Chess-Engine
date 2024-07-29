@@ -1,14 +1,14 @@
-class GameState(): #still need to change the board, add the piece image, add the move function in self.moveFunctions
+class GameState(): # still need to change the board, add the piece image, add the move function in self.moveFunctions
     def __init__(self):
         self.board = [
-            ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+            ["bR", "bN", "bB", "bQ", "bK", "bH", "bN", "bR"],
             ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
-            ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
+            ["wR", "wN", "wB", "wQ", "wK", "wH", "wN", "wR"]
         ]
 
         self.whiteToMove = True
@@ -19,7 +19,7 @@ class GameState(): #still need to change the board, add the piece image, add the
         self.blackHandLocation = (0, 5)
         self.checkmate = False
         self.stalemate = False
-        self.enpassantPossible = () #will be the coordiantes where an en passent capture is possible
+        self.enpassantPossible = () # will be the coordinates where an enpassent capture is possible
         self.enpassantPossibleLog = [self.enpassantPossible]
         self.currentCastlingRight = CastleRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)]
@@ -30,8 +30,8 @@ class GameState(): #still need to change the board, add the piece image, add the
             'N' : self.getKnightMoves,
             'B' : self.getBishopMoves,
             'Q' : self.getQueenMoves,
-            'K' : self.getKingMoves #,
-            # 'H' : self.getHandMoves
+            'K' : self.getKingMoves,
+            'H' : self.getHandMoves
             }
 
     def makeMove(self, move):
@@ -88,7 +88,7 @@ class GameState(): #still need to change the board, add the piece image, add the
                 self.blackKingLocation = (move.startRow, move.startCol)
             #undo enpassant
             if move.isEnpassantMove:
-                self.board[move.endRow][move.endCol] = '--' #leave landing square blank
+                self.board[move.endRow][move.endCol] = '--' # leave landing square blank
                 self.board[move.startRow][move.endCol] = move.pieceCaptured
 
             self.enpassantPossibleLog.pop()
@@ -339,7 +339,7 @@ class GameState(): #still need to change the board, add the piece image, add the
                     moves.append(Move((r, c), (endRow, endCol), self.board))
 
     def getCastleMoves(self, r, c, moves):
-        if self.squareUnderAttack(r, c): #no castle when in check
+        if self.squareUnderAttack(r, c): # no castle when in check
             return
         if (self.whiteToMove and self.currentCastlingRight.wks) or (not self.whiteToMove and self.currentCastlingRight.bks):
             self.getKingsideCastleMoves(r, c, moves)
@@ -380,9 +380,9 @@ class Move():
 
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
-        #pawn promotion
+        # pawn promotion
         self.isPawnPromotion = (self.pieceMoved == 'wp' and self.endRow == 0) or (self.pieceMoved == 'bp' and self.endRow == 7)
-        #pawn en passant
+        # pawn en passant
         self.isEnpassantMove = isEnpassantMove
         if self.isEnpassantMove:
             self.pieceCaptured = 'wp' if self.pieceMoved == 'bp' else 'bp'
@@ -404,13 +404,13 @@ class Move():
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
 
-#overriding string function
+# overriding string function
     def __str__(self):
-        #castle move
+        # castle move
         if self.isCastleMove:
             return "O-O" if self.endCol == 6 else "O-O-O"
         endSquare = self.getRankFile(self.endRow, self.endCol)
-        #pawn moves
+        # pawn moves
         if self.pieceMoved[1] == 'p':
             if self.isCapture:
                 return self.colsToFiles[self.startCol] + "x" + endSquare
