@@ -2,6 +2,8 @@ import pygame as p
 import ChessEngine, SmartMoveFinder
 from multiprocessing import Process, Queue
 
+# king side castle not working with hand
+
 BOARD_WIDTH = BOARD_HEIGHT = 512
 MOVE_LOG_PANEL_WIDTH = 250
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
@@ -34,7 +36,7 @@ def main():
     running = True
 
     playerOne = True #if a human is playing white then this will be true, if an AI is playing then false
-    playerTwo = False #same as above but for black
+    playerTwo = True #same as above but for black
 
     AIThinking = False
     moveFinderProcess = None
